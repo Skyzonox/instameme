@@ -1,0 +1,55 @@
+
+
+
+
+.navbar {
+    position:absolute;
+    padding: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing:border-box; 
+
+}
+
+.navbar a{
+    color:rgb(0, 0, 0);
+}
+
+.navbar .logo  {
+    font-size: 2em;
+    font-weight: bold;
+
+}
+
+.navbar .nav-links ul{
+    display: flex;
+
+}
+
+.navbar .nav-links ul{
+    display: flex;
+    
+
+}
+
+.navbar .nav-links ul li{
+    margin:  0 25px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

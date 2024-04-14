@@ -1,0 +1,80 @@
+body{
+    color: black;
+    background-image: url(demo_php/css/wallpaperflare.com_wallpaper.jpg);
+    background-repeat: no-repeat;
+
+}
+
+.tableau{
+
+    max-width: 4600px;
+    width: 100%;
+    height: auto;
+    margin: 30px auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 400px);
+    grid-gap: 30px;
+    justify-content: center;
+
+
+}
+
+.meme{ 
+    display: grid;
+    width: 400px;
+    height: 400px;
+    background: rgb(255, 255, 255);
+    text-align: center;
+    align-items: center;
+    border: 2px solid #333;
+    grid-template-columns: repeat(auto-fill, 400px);
+    
+   
+    
+}
+
+.pseudo{
+    align-items: center;
+}
+
+
+
+.meme-image{
+
+    align-items: center;
+}
+
+.meme-image-content {
+
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.fa-solid fa-heart{
+    left: 30px;
+    
+}
+
+
+
+.comment{
+    width: 100%;
+    max-height: 125px;
+    resize: none;
+    padding: 0px; 
+    box-sizing: border-box; 
+    overflow:scroll;
+    scrollbar-width: auto;
+
+}
+.fas fa-comment{
+
+    width: 100%;
+    max-height: 125px;
+    resize: none;
+    padding: 0px; 
+    box-sizing: border-box; 
+    overflow:scroll;
+    scrollbar-width: auto;
+
+}
