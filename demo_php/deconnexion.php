@@ -1,7 +1,6 @@
 <?php
 session_start();
 session_destroy();
-header('Location:/demo_php/index.php');
+header('Location: index.php'); // Remove /demo_php/ path
 exit;
-
 ?>
