@@ -1,53 +1,81 @@
 <?php
 session_start();
-$bdd = new PDO('mysql:host=127.0.0.1;dbname=instameme;charset=utf8','root', '');
+require_once 'affichage.php';
+require_once 'db.php';
 
-if(isset($_POST['connexion'])){
-    if(!empty($_POST['pseudo']) AND !empty($_POST['mot_de_passe'])){
-        $pseudo = $_POST['pseudo'];
-        
-        // Récupère l'utilisateur par pseudo
-        $recupUser = $bdd->prepare('SELECT * FROM utilisateurs WHERE pseudo = ?');
-        $recupUser->execute(array($pseudo));
-        
-        if($recupUser->rowCount() > 0){
-            $user = $recupUser->fetch();
-            
-            // Vérifie le mot de passe avec password_verify
-            if(password_verify($_POST['mot_de_passe'], $user['mot_de_passe'])){
-                $_SESSION['pseudo'] = $pseudo;
-                $_SESSION['id'] = $user['id'];
-                header('Location: index.php');
-                exit;
-            } else {
-                echo "Pseudo ou mot de passe incorrect";
-            }
-        } else {
-            echo "Pseudo ou mot de passe incorrect";
-        }
+// Rediriger si déjà connecté
+if (isLoggedIn()) {
+    redirectTo('index.php');
+}
+
+$error = '';
+
+if (isset($_POST['connexion'])) {
+    // Vérifier le token CSRF
+    if (!verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+        $error = 'Token de sécurité invalide';
     } else {
-        echo "Veuillez compléter tous les champs";
+        $pseudo = trim($_POST['pseudo'] ?? '');
+        $mot_de_passe = $_POST['mot_de_passe'] ?? '';
+        
+        if (empty($pseudo) || empty($mot_de_passe)) {
+            $error = 'Veuillez compléter tous les champs';
+        } else {
+            // Récupérer l'utilisateur
+            $user_query = db()->prepare('SELECT id, pseudo, mot_de_passe FROM utilisateurs WHERE pseudo = ?');
+            $user_query->execute([$pseudo]);
+            
+            if ($user_query->rowCount() > 0) {
+                $user = $user_query->fetch();
+                
+                // Vérifier le mot de passe
+                if (password_verify($mot_de_passe, $user['mot_de_passe'])) {
+                    // Connexion réussie
+                    session_regenerate_id(true); // Sécurité contre les attaques de session
+                    $_SESSION['id'] = $user['id'];
+                    $_SESSION['pseudo'] = $user['pseudo'];
+                    
+                    redirectTo('index.php');
+                } else {
+                    $error = 'Pseudo ou mot de passe incorrect';
+                }
+            } else {
+                $error = 'Pseudo ou mot de passe incorrect';
+            }
+        }
     }
 }
+
+pageHeader('Connexion');
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion</title>
-</head>
-<body>
-    <form method="POST" action="" align="center">
-        <h1>Pseudo</h1>
-        <input type="text" name="pseudo">
-        <br>
-        <h2>Mot de passe</h2>
-        <input type="password" name="mot_de_passe">
-        <br><br>
-        <input type="submit" name="connexion">
-        <a href='Inscription.php'> Inscrivez vous ici </a>
-    </form>
-</body>
-</html>
+<div class="auth-container">
+    <div class="auth-form">
+        <h1>Connexion</h1>
+        
+        <?php if ($error): ?>
+            <?php showAlert($error, 'error'); ?>
+        <?php endif; ?>
+        
+        <form method="POST" action="">
+            <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+            
+            <div class="form-group">
+                <label for="pseudo">Pseudo</label>
+                <input type="text" name="pseudo" id="pseudo" required 
+                       value="<?php echo sanitizeOutput($_POST['pseudo'] ?? ''); ?>">
+            </div>
+            
+            <div class="form-group">
+                <label for="mot_de_passe">Mot de passe</label>
+                <input type="password" name="mot_de_passe" id="mot_de_passe" required>
+            </div>
+            
+            <button type="submit" name="connexion">Se connecter</button>
+        </form>
+        
+        <p>Pas encore inscrit ? <a href="inscription.php">S'inscrire</a></p>
+    </div>
+</div>
+
+<?php pageFooter(); ?>
